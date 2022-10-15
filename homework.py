@@ -39,6 +39,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
+    """Возвращает ответ API в случае успешного запроса."""
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
