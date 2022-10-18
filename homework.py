@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 import sys
 import time
 from http import HTTPStatus
@@ -14,10 +15,6 @@ from exceptions import (EmptyResponseError, HTTPStatusError, ResponseError,
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-logger.addHandler(handler)
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -31,6 +28,25 @@ HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
+
+
+def init_logger():
+    """Инициализируем логгер"""
+    """Ольга, сможете, пожалуйста, объяснить почему пайтест ругается,
+     если логгер запихнуть рядом с вызовом main(), но всё работает?"""
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s, %(levelname)s, %(message)s, %(name)s',
+        handlers=[logging.FileHandler('main.log', 'w', 'utf-8'),
+                  logging.StreamHandler(sys.stdout)]
+    )
+    logger_init = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+    logger_init.addHandler(handler)
+    return logger_init
+
+
+logger = init_logger()
 
 
 def send_message(bot, message):
@@ -59,6 +75,9 @@ def get_api_answer(current_timestamp):
         return homework_statuses.json()
     except ResponseError as error:
         raise ResponseError(f'API упал с ошибкой {error}')
+    except json.JSONDecodeError:
+        logging.error('Ответ сервера не преобразуется в json')
+        send_message('Ответ сервера не преобразуется в json')
 
 
 def check_response(response):
@@ -134,4 +153,7 @@ if __name__ == '__main__':
         handlers=[logging.FileHandler('main.log', 'w', 'utf-8'),
                   logging.StreamHandler(sys.stdout)]
     )
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
     main()
