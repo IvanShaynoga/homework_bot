@@ -32,8 +32,6 @@ HOMEWORK_VERDICTS = {
 
 def init_logger():
     """Инициализируем логгер"""
-    """Ольга, сможете, пожалуйста, объяснить почему пайтест ругается,
-     если логгер запихнуть рядом с вызовом main(), но всё работает?"""
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(asctime)s, %(levelname)s, %(message)s, %(name)s',
